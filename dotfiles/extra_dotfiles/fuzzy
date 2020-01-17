@@ -1,0 +1,75 @@
+
+#export FZF_DEFAULT_COMMAND
+export SC="$HOME/profile_config"
+#Fuzzy search tools
+#Dependencies
+#Both fzf and skim use fd to do the file searching portion of the fuzzy search.
+#it is a much faster version of find written in rust.
+#find can be used in its place however is is not recommended
+#fd can be installed via https://github.com/sharkdp/fd
+
+#when using the vfsearch or cfsearch alias we use a custom bash script which
+#leverages bat to display text with syntax highlighting.
+#installation guidelines can be found at https://github.com/sharkdp/bat
+
+#searching text is done using ripgrep which is a faster version of grep with
+#some novel niceties.
+
+#Fzf is a fuzzy search cli tool, it can be used in combination with a number of
+#other cli tools such as git, vim, ect
+#installation can be done via github https://github.com/junegunn/fzf
+export FZF_DEFAULT_COMMAND="fd --type file --color=always"
+export FZF_DEFAULT_OPTS="--reverse --inline-info --ansi --preview-window=up:55"
+#sk is a fuzzy search cli tool, it can be used in combination with a number of
+#other cli tools such as git, vim, ect
+#installation can be done via github https://github.com/lotabout/skim
+#it can be used interchangably with fzf and is only different in that it
+#supports and interactive mode, has a slightly better search algorithm
+#and has better performance and is written in rust
+export SKIM_COMPLETION_TRIGGER=']]'
+export SKIM_DEFAULT_COMMAND="fd --type file --color=always"
+export SKIM_DEFAULT_OPTIONS="--reverse --inline-info --ansi --preview-window=up:55"
+export SKIM_COMPLETION_TRIGGER=']]'
+export MANPATH="/home/linuxbrew/.linuxbrew/share/man:$MANPATH"
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+export INFOPATH="/home/linuxbrew/.linuxbrew/share/info:$INFOPATH"
+export scprelease='pyrite:/home/rmarr/release'
+# Custom Aliases
+#alias wifiTest = "ping -c 10 Pyrite > ~/Documents/connectivityIssues/$(date).txt"
+alias orphan='& disown'
+#fuzzy search text recursively through all files at a starting directory point.
+#when used a preview screen will appear which will update as the use enters a
+#string. the preview can be adjusted using ctrl+up or ctrl+down and when the
+#user presses the return key they will open the file at the previewed line using
+#either vim or vscode depending whether vfsearch or cfsearch is used.
+#fsearch will not open the file at all.
+alias ffind='rg . -n -g "*.{ini,json,php,md,config,py,cpp,c,go,h,conf}" | \
+    fzf --preview="source $SC/string2arg.sh; string2arg {}"'
+alias fsearch='export vfile=$(ffind);echo $(cut -d":" -f1 <<< $vfile)'
+alias vfsearch='export vfile=$(ffind);vim +$(cut -d":" -f2 <<< $vfile) \
+    $(cut -d":" -f1 <<< $vfile)'
+alias cfsearch='export cfile=$(ffind);code --goto \
+    $(cut -d":" -f1 <<< $cfile):$(cut -d":" -f2 <<< $cfile) & disown'
+alias fcheck='git_checkout $(git branch | sk)'
+alias rcheck='git_checkout $(git branch -r | sed "s/origin\///" | sk)'
+
+alias nf='nvim $(fzf)'
+#vf does a recursive fuzzy search for all files roughly matching the user
+#entered string. a preview window will be displayed with the head of the
+#file which best matches the current string.
+alias vf='vfile=$(fzf --preview="bat {}");vim $vfile && echo $vfile'
+alias gf='git commit --fixup HEAD'
+#the following aliases denoted with 's' are counterparts of the above fuzzy
+#functions with the difference that they leverage bear (build ear) from at
+# and the print_files.py script to only search for the devices files last
+# compiled using wbear
+alias svf='vi $(python3 $SC/print_files.py -v | fzf)'
+alias sffind='rg . -n $(python3 $SC/print_files.py) | \
+    fzf --preview="source $SC/string2arg.sh; string2arg {}"'
+alias sfsearch='export vfile=$(sffind);echo $(cut -d":" -f1 <<< $vfile)'
+alias svfsearch='export vfile=$(sffind);vim +$(cut -d":" -f2 <<< $vfile) \
+    $(cut -d":" -f1 <<< $vfile)'
+alias scfsearch='export cfile=$(sffind);code --goto \
+    $(cut -d":" -f1 <<< $cfile):$(cut -d":" -f2 <<< $cfile) & disown'
+alias ga='git add $(fzf)'
+alias fdiff='git diff $(fuzzls)'
