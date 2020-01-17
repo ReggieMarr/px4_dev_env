@@ -1,6 +1,7 @@
+#Starting point is the px4 bionic (ubuntu 18.04) docker
 FROM px4io/px4-dev-simulation-bionic:2020-01-15
-
 MAINTAINER Reginald Marr version: 0.1
+
 
 RUN apt-get update && apt-get install -y \
     tmux \
@@ -30,7 +31,22 @@ ARG HOME=/root
 
 WORKDIR $HOME/Downloads/gitDownloads
 
+#download px4 setup
+RUN cd $HOME && mkdir -p PX4 && cd PX4
 
+RUN git clone https://github.com/PX4/Firmware.git && cd Firmware/Tools/setup
+
+RUN $HOME/Downloads/gitDownloads/Firmware/Tools/setup/ubuntu.sh
+
+RUN ln -s $HOME/Downloads/gitDownloads/Firmware $HOME/PX4/
+
+RUN cd $HOME/Downloads/gitDownloads
+
+#Comment below here if you dont want any custom development tools
+
+#Installs rust
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+#Install development tools
 RUN pip3 install compiledb
 #RUN git clone https://github.com/rizsotto/Bear.git && cd Bear \
 #    && mkdir -p build && cd build && cmake ../ && make all && \
@@ -53,6 +69,15 @@ RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh
 
 RUN apt-get install locales && sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' \
     /etc/locale.gen && locale-gen
+#brings in work env dotfiles
+RUN git clone https://github.com/ReggieMarr/workstation_setup.git
+
+RUN rm -f $HOME/.zshrc
+RUN rm -f $HOME/.bashrc
+RUN rm -f $HOME/.bash_aliases
+RUN ln -s $HOME/Downloads/gitDownloads/workstation_setup/dotfiles/zshrc $HOME/.zshrc
+RUN ln -s $HOME/Downloads/gitDownloads/workstation_setup/dotfiles/bashrc $HOME/.bashrc
+RUN ln -s $HOME/Downloads/gitDownloads/workstation_setup/dotfiles/bash_aliases $HOME/.bash_aliases
 
 # Generally a good idea to have these, extensions sometimes need them
 RUN locale-gen en_US.UTF-8
@@ -69,25 +94,5 @@ RUN apt install software-properties-common -y
 RUN add-apt-repository ppa:neovim-ppa/stable
 RUN apt-get update && apt-get install -y \
       neovim
-
-RUN cd $HOME && mkdir -p PX4 && cd PX4
-
-RUN git clone https://github.com/PX4/Firmware.git && cd Firmware/Tools/setup
-
-RUN $HOME/PX4/Firmware/Tools/setup/ubuntu.sh
-
-RUN ln -s $HOME/Downloads/gitDownloads/Firmware $HOME/PX4/
-
-RUN cd $HOME/Downloads/gitDownloads
-
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -y
-RUN git clone https://github.com/ReggieMarr/workstation_setup.git
-
-RUN rm -f $HOME/.zshrc
-RUN rm -f $HOME/.bashrc
-RUN rm -f $HOME/.bash_aliases
-RUN ln -s $HOME/Downloads/gitDownloads/workstation_setup/dotfiles/zshrc $HOME/.zshrc
-RUN ln -s $HOME/Downloads/gitDownloads/workstation_setup/dotfiles/bashrc $HOME/.bashrc
-RUN ln -s $HOME/Downloads/gitDownloads/workstation_setup/dotfiles/bash_aliases $HOME/.bash_aliases
 
 CMD ["zsh"]

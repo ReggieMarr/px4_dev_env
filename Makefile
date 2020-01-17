@@ -1,7 +1,10 @@
 #Dockertasks
 
-build: ##Build the container
+build-clean: ##Build the container
 	@docker build -t px4_bionic_dev . --no-cache
+
+build: ##Build the container
+	@docker build -t px4_bionic_dev .
 
 run: ##Run the container
 	@docker run -it --net=host \
