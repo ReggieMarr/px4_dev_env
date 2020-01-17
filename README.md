@@ -3,23 +3,23 @@
 
 # Setting up the docker environment
 
-git clone https://github.com/ReggieMarr/px4_dev_env.git
+    git clone https://github.com/ReggieMarr/px4_dev_env.git
 
-cd px4_dev_env
+    cd px4_dev_env
 
-sudo apt install libgazebo9 gazebo
+    sudo apt install libgazebo9 gazebo
 
-make build
+    make build
 
-make run
+    make run
 
 ### From inside the docker
 
-cd
+    cd
 
-cd Downloads/gitDownloads/Firmware
+    cd Downloads/gitDownloads/Firmware
 
-HEADLESS=1 make px4_sitl gazebo_solo
+    HEADLESS=1 make px4_sitl gazebo_solo
 
 
 ### From inside the docker
