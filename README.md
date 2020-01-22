@@ -37,9 +37,11 @@ Use the following to launch a shell inside the docker
 
 ### From inside the docker
 
-    cd
+    cd Downloads/gitDownloads/dev
 
-    cd Downloads/gitDownloads/Firmware
+    source ubuntu.shell
+
+    cd /home/user/PX4
 
     HEADLESS=1 make px4_sitl gazebo_solo
 
