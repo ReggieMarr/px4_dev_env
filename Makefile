@@ -12,6 +12,12 @@ endif
 ifndef PX4_DOCKER_BUILD_TYPE
 #Clean Build the container
 build-clean:
+	@export PATH=$PATH:/usr/sbin
+	@sudo adduser $(whoami) dialout
+	@sg dialout
+	@sudo usermod -a -G docker $(USER)
+	@sudo usermod -a -G dialout $(USER)
+	@su $(USER)
 	@docker build -t px4_bionic_dev . --no-cache
 
 #Build the container
@@ -43,7 +49,7 @@ run: __get-px4-fw
 	  -v "$(PX4_PATH)/Firmware:/home/$(USER)/PX4/Firmware" \
 	  --device=/dev/dri:/dev/dri \
 	  --name=px4_bionic_dev \
-	  px4_bionic_image
+	  px4_bionic_dev
 
 # Git clone px4 fw
 __get-px4-fw:

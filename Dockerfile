@@ -5,32 +5,8 @@ MAINTAINER Reginald Marr version: 0.1
 ARG HOME=/root
 
 WORKDIR $HOME/Downloads/gitDownloads
-
-#download px4 setup
-ADD https://raw.githubusercontent.com/PX4/Firmware/master/Tools/setup/ubuntu.sh $HOME/Downloads/gitDownloads
-ADD https://raw.githubusercontent.com/PX4/Firmware/master/Tools/setup/requirements.txt $HOME/Downloads/gitDownloads
-
-RUN chmod +x $HOME/Downloads/gitDownloads/ubuntu.sh
-RUN $HOME/Downloads/gitDownloads/ubuntu.sh
-
-#This would be how you would git clone firmware directly into docker
-#RUN cd $HOME && mkdir -p PX4 && cd PX4
-#
-#RUN git clone https://github.com/PX4/Firmware.git && cd Firmware/Tools/setup
-#
-#RUN $HOME/Downloads/gitDownloads/Firmware/Tools/setup/ubuntu.sh
-#
-#RUN ln -s $HOME/Downloads/gitDownloads/Firmware $HOME/PX4/
-#
-#RUN cd $HOME/Downloads/gitDownloads
-
-FROM px4_bionic_sim_env as base_dev_env
-
-#dev env packages
-
+#Download minimum required packages
 RUN apt-get update && apt-get install -y \
-    tmux \
-    zsh \
     curl \
     wget \
     vim \
@@ -48,6 +24,31 @@ RUN apt-get update && apt-get install -y \
     dpkg \
     tree \
     python3-pip \
+    && rm -rf /var/likb/apt/lists/*
+
+RUN apt-get update --fix-missing -y && apt-get upgrade -y
+#download px4 setup
+ADD https://raw.githubusercontent.com/PX4/Firmware/master/Tools/setup/ubuntu.sh $HOME/Downloads/gitDownloads
+ADD https://raw.githubusercontent.com/PX4/Firmware/master/Tools/setup/requirements.txt $HOME/Downloads/gitDownloads
+
+RUN chmod +x $HOME/Downloads/gitDownloads/ubuntu.sh
+#RUN $HOME/Downloads/gitDownloads/ubuntu.sh
+
+#This would be how you would git clone firmware directly into docker
+#RUN cd $HOME && mkdir -p PX4 && cd PX4
+#
+#RUN git clone https://github.com/PX4/Firmware.git && cd Firmware/Tools/setup
+#
+#RUN $HOME/Downloads/gitDownloads/Firmware/Tools/setup/ubuntu.sh
+#
+#RUN ln -s $HOME/Downloads/gitDownloads/Firmware $HOME/PX4/
+#
+#RUN cd $HOME/Downloads/gitDownloads
+
+FROM px4_bionic_sim_env as base_dev_env
+
+RUN apt-get update && apt-get install -y \
+    zsh \
     && rm -rf /var/likb/apt/lists/*
 
 RUN apt-get update --fix-missing -y && apt-get upgrade -y
