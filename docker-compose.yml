@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+    px4_dev:
+        build:
+            context: .
+            target: "${PX4_DOCKER_BUILD_TYPE:-base_dev_env}"
+        container_name: px4_bionic_dev
+        working_dir: "/home/${USER}"
+        network_mode: "host"
+        tty: true
+        ports:
+            - "11345:11345/udp"
+            - "14556:14556/udp"
+        environment:
+            DISPLAY: "${DISPLAY}"
+            QT_GRAPHICSSYSTEM: native
+            CONTAINER_NAME: kinetic-dev
+            USER: "${USER}"
+            DISPLAY: "${DISPLAY}"
+            LOCAL_USER_ID: "${LOCAL_USER_ID:?err}"
+        volumes:
+            - "./Firmware:/home/${USER}/PX4/Firmware"
+            - "/tmp/.X11-unix:/tmp/.X11-unix"
+        devices:
+            - "/dev/dri:/dev/dri"
+
