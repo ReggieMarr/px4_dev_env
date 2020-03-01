@@ -32,6 +32,7 @@ ADD https://raw.githubusercontent.com/PX4/Firmware/master/Tools/setup/ubuntu.sh 
 ADD https://raw.githubusercontent.com/PX4/Firmware/master/Tools/setup/requirements.txt $HOME/Downloads/gitDownloads
 
 RUN chmod +x $HOME/Downloads/gitDownloads/ubuntu.sh
+RUN sed -i 's/sudo usermod/#sudo usermod/g' $HOME/Downloads/gitDownloads/ubuntu.sh
 #RUN $HOME/Downloads/gitDownloads/ubuntu.sh
 
 #This would be how you would git clone firmware directly into docker
